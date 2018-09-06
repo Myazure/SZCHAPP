@@ -71,7 +71,7 @@ var HomePage = /** @class */ (function () {
         var line_status = 0;
         var del_point_status = 0;
         var del_line_status = 0;
-        var edit_point = 0;
+        var edit_point = false;
         AMap.event.addDomListener(document.getElementById('addpoint'), 'click', function () {
             $('.btn button').css("background-color", "#aaaaaa");
             $('#addpoint').css("background-color", "red");
@@ -79,7 +79,7 @@ var HomePage = /** @class */ (function () {
             line_status = 0;
             del_point_status = 0;
             del_line_status = 0;
-            edit_point = 0;
+            edit_point = false;
             map.setStatus({ dragEnable: false });
         }, false);
         AMap.event.addDomListener(document.getElementById('addline'), 'click', function () {
@@ -88,8 +88,8 @@ var HomePage = /** @class */ (function () {
             point_status = 0;
             line_status = 1;
             del_point_status = 0;
-            del_line_status = 1;
-            edit_point = 0;
+            del_line_status = 0;
+            edit_point = false;
             map.setStatus({ dragEnable: true });
         }, false);
         AMap.event.addDomListener(document.getElementById('delpoint'), 'click', function () {
@@ -99,7 +99,7 @@ var HomePage = /** @class */ (function () {
             line_status = 0;
             del_point_status = 1;
             del_line_status = 0;
-            edit_point = 0;
+            edit_point = false;
             map.setStatus({ dragEnable: true });
         }, false);
         AMap.event.addDomListener(document.getElementById('delline'), 'click', function () {
@@ -109,18 +109,21 @@ var HomePage = /** @class */ (function () {
             line_status = 0;
             del_point_status = 0;
             del_line_status = 1;
-            edit_point = 0;
+            edit_point = false;
             map.setStatus({ dragEnable: true });
         }, false);
         // $('#show').click(function () {
         //     alert(del_line_status);
         // })
         $('#editpoint').click(function () {
+            $('.btn button').css("background-color", "#aaaaaa");
+            $('#editpoint').css("background-color", "red");
             point_status = 0;
             line_status = 0;
-            del_point_status = 1;
+            del_point_status = 0;
             del_line_status = 0;
-            edit_point = 1;
+            edit_point = true;
+            map.setStatus({ dragEnable: true });
         });
         var lineArr = [];
         //添加点
@@ -129,10 +132,12 @@ var HomePage = /** @class */ (function () {
                 var marker = new AMap.Marker({
                     map: map,
                     icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
-                    position: [e.lnglat.getLng(), e.lnglat.getLat()]
+                    position: [e.lnglat.getLng(), e.lnglat.getLat()],
+                    autoRotation: true,
                 });
                 marker.setMap(map);
-                marker.on('click', function (e) {
+                marker.on('click', function () {
+                    console.log(edit_point);
                     //添加线
                     if (line_status) {
                         if (lineArr.length >= 2) {
@@ -150,15 +155,21 @@ var HomePage = /** @class */ (function () {
                         console.log(lineArr);
                         polyline_1.setMap(map);
                         //删除线
-                        if (del_line_status) {
-                            polyline_1.on('click', function () {
+                        polyline_1.on('click', function () {
+                            if (del_line_status) {
                                 map.remove(polyline_1);
-                            });
-                        }
+                            }
+                        });
                     }
                     //删除点
                     if (del_point_status) {
                         marker.setMap(null);
+                    }
+                    if (edit_point) {
+                        marker.setDraggable(true);
+                    }
+                    else {
+                        marker.setDraggable(false);
                     }
                 });
             }
@@ -170,7 +181,7 @@ var HomePage = /** @class */ (function () {
     ], HomePage.prototype, "map_container", void 0);
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/myApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Home</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <div class="btn">\n    <button id="addpoint">添加点</button>\n    <button id="addline">添加线</button>\n    <button id="delpoint">删除点</button>\n    <button id="delline">删除线</button>\n    <button id="editpoint">编辑点</button>\n    <!--<button id="show">删除线</button>-->\n  </div>\n  <div class="container" #map_container></div>\n</ion-content>\n'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/myApp/src/pages/home/home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Home</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <div class="btn">\n    <button id="addpoint">添加点</button>\n    <button id="addline">添加线</button>\n    <button id="delpoint">删除点</button>\n    <button id="delline">删除线</button>\n    <button id="editpoint">编辑点</button>\n    <!--<button id="show">删除线</button>-->\n  </div>\n  <div class="container" #map_container></div>\n</ion-content>\n'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/pages/home/home.html"*/
         }),
         __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _b || Object])
     ], HomePage);
@@ -227,7 +238,7 @@ var ListPage = /** @class */ (function () {
     };
     ListPage = ListPage_1 = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-list',template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/myApp/src/pages/list/list.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>List</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list>\n    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">\n      <ion-icon [name]="item.icon" item-start></ion-icon>\n      {{item.title}}\n      <div class="item-note" item-end>\n        {{item.note}}\n      </div>\n    </button>\n  </ion-list>\n  <div *ngIf="selectedItem" padding>\n    You navigated here from <b>{{selectedItem.title}}</b>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/myApp/src/pages/list/list.html"*/
+            selector: 'page-list',template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/pages/list/list.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>List</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list>\n    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">\n      <ion-icon [name]="item.icon" item-start></ion-icon>\n      {{item.title}}\n      <div class="item-note" item-end>\n        {{item.note}}\n      </div>\n    </button>\n  </ion-list>\n  <div *ngIf="selectedItem" padding>\n    You navigated here from <b>{{selectedItem.title}}</b>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/pages/list/list.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavParams */]])
     ], ListPage);
@@ -380,7 +391,7 @@ var MyApp = /** @class */ (function () {
         __metadata("design:type", __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* Nav */])
     ], MyApp.prototype, "nav", void 0);
     MyApp = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/myApp/src/app/app.html"*/'<ion-menu [content]="content">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">\n        {{p.title}}\n      </button>\n      <button menuClose ion-item *ngFor="let p of menu" (click)="doaction(p)">\n        {{p.title}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<!-- Disable swipe-to-go-back because it\'s poor UX to combine STGB with side menus -->\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/myApp/src/app/app.html"*/
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/app/app.html"*/'<ion-menu [content]="content">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">\n        {{p.title}}\n      </button>\n      <button menuClose ion-item *ngFor="let p of menu" (click)="doaction(p)">\n        {{p.title}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<!-- Disable swipe-to-go-back because it\'s poor UX to combine STGB with side menus -->\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>'/*ion-inline-end:"/Users/hongcan.cai.o/ionic/git-app/myapp/src/app/app.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* Platform */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */], __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */]])
     ], MyApp);
